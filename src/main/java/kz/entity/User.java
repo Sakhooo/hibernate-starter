@@ -18,7 +18,7 @@ import java.util.Set;
 @Entity
 @ToString(exclude = {"company", "profile", "userChats"})
 @Table(name = "users", schema = "public")
-public class User {
+public class User implements BaseEntity<Long>{
 
   @Id
   @GeneratedValue(generator = "user_gen", strategy = GenerationType.IDENTITY)
