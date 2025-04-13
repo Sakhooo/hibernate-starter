@@ -32,23 +32,7 @@ public class Main {
 
 
 
-      User user = User.builder()
-              .username("qwer3")
-              .personalInfo(PersonalInfo.builder()
-                      .birthDate(new Birthday(LocalDate.of(2000, 1, 19)))
-              .firstname("Sagadat1")
-              .lastname("asdf")
-
-                      .build())
-//              .info("""
-//                      {
-//                      "name": "Sagadat",
-//                      "id": "25"
-//                      }
-//                      """)
-              .company(company)
-//
-              .build();
+      User user = null;
 
       log.info("User entity is in transient state, object: {} ", user);
 

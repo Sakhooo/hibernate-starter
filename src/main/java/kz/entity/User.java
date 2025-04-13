@@ -14,14 +14,13 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @ToString(exclude = {"company", "profile", "userChats"})
-@Table(name = "users", schema = "public")
-public class User implements BaseEntity<Long>{
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class User implements BaseEntity<Long>{
 
   @Id
-  @GeneratedValue(generator = "user_gen", strategy = GenerationType.IDENTITY)
+  @GeneratedValue(generator = "user_gen", strategy = GenerationType.SEQUENCE)
 //  @SequenceGenerator(name = "user_gen", sequenceName = "users_id_seq", allocationSize = 1)
   private Long id;
 
@@ -41,10 +40,9 @@ public class User implements BaseEntity<Long>{
   @JoinColumn(name = "company_id")
   private Company company;
 
-  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = false)
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
   private Profile profile;
 
-  @Builder.Default
   @OneToMany(mappedBy = "user")
   private List<UserChat> userChats = new ArrayList<>();
 

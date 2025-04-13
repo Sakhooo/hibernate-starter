@@ -23,12 +23,33 @@ class MainTest {
         var session = sessionFactory.openSession()) {
       session.beginTransaction();
 
-      var company = Company.builder()
-
+      var google = Company.builder()
               .name("Google")
               .build();
 
-      session.save(company);
+      session.save(google);
+
+      var programmer = Programmer.builder()
+              .username("ivan@gmail.com")
+              .language(Language.JAVA)
+              .company(google)
+              .build();
+
+      session.save(programmer);
+
+      var manager = Manager.builder()
+              .username("sveta@gmail.com")
+              .projectName("loan")
+              .company(google)
+              .build();
+
+      session.save(manager);
+      session.flush();
+
+      session.clear();
+
+      var programmer1 = session.get(Programmer.class, 1L);
+      var user = session.get(User.class, 1L);
 
 
       session.getTransaction().commit();
@@ -97,9 +118,7 @@ class MainTest {
         var session = sessionFactory.openSession()) {
       session.beginTransaction();
 
-      User user = User.builder()
-              .username("test@gmail.com")
-              .build();
+      User user = null;
 
       Profile profile = Profile.builder()
               .language("ru")
@@ -148,13 +167,7 @@ class MainTest {
 
             .build();
 
-    User user = User.builder()
-            .personalInfo(personalInfo)
-            .username("qwer")
-//            .lastname("asdf")
-//            .birthDate(LocalDate.of(2000, 1, 19))
-//            .age(20)
-            .build();
+    User user = null;
 
     String tableName = Optional.ofNullable(user.getClass().getAnnotation(Table.class))
             .map(tableAnnotation -> tableAnnotation.schema() + "." + tableAnnotation.name())
@@ -176,9 +189,7 @@ class MainTest {
     Company facebook = Company.builder()
             .name("Facebook")
             .build();
-    User user = User.builder()
-            .username("Sveta@Mail.com")
-            .build();
+    User user = null;
 
 //    user.setCompany(facebook);
 //    facebook.getUsers().add(user);
