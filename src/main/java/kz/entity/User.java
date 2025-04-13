@@ -16,11 +16,13 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @ToString(exclude = {"company", "profile", "userChats"})
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name = "users", schema = "public")
+@DiscriminatorColumn(name = "type")
 public abstract class User implements BaseEntity<Long>{
 
   @Id
-  @GeneratedValue(generator = "user_gen", strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(generator = "user_gen", strategy = GenerationType.IDENTITY)
 //  @SequenceGenerator(name = "user_gen", sequenceName = "users_id_seq", allocationSize = 1)
   private Long id;
 
