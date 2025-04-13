@@ -8,14 +8,42 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.query.Query;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 class MainTest {
+
+
+  @Test
+  void hqlSelect() {
+    try(var sessionFactory = HibernateTestUtil.buildSessionFactory();
+        var session = sessionFactory.openSession()) {
+      session.beginTransaction();
+
+
+      String name = "Ivan";
+      String company = "Google";
+
+      var user = session.createQuery(
+//              "select u from User u where u.personalInfo.firstname = ?1", User.class)
+              "select u from User u " +
+                      " join u.company c " +
+                      "where u.personalInfo.firstname = :firstname and c.name = :companyName", User.class)
+//              .setParameter(1, name)
+              .setParameter("firstname", name)
+              .setParameter("companyName", company)
+              .list();
+
+
+      session.getTransaction().commit();
+    }
+  }
 
   @Test
   void testH2() {
