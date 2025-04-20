@@ -4,13 +4,16 @@ import kz.entity.*;
 import kz.example.util.HibernateTestUtil;
 import kz.util.HibernateUtil;
 import lombok.Cleanup;
+import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.jpa.QueryHints;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.query.Query;
 import org.junit.jupiter.api.Test;
 
+import javax.persistence.QueryHint;
 import javax.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -30,6 +33,9 @@ class MainTest {
       String name = "Ivan";
       String company = "Google";
 
+      session.createNamedQuery("findUserByName", User.class);
+
+
       var user = session.createQuery(
 //              "select u from User u where u.personalInfo.firstname = ?1", User.class)
               "select u from User u " +
@@ -38,7 +44,13 @@ class MainTest {
 //              .setParameter(1, name)
               .setParameter("firstname", name)
               .setParameter("companyName", company)
+              .setFlushMode(FlushMode.COMMIT)
+              .setHint(QueryHints.HINT_FETCH_SIZE, "50")
               .list();
+
+      int countRows = session.createQuery("update User u set u.profile = 'asd'").executeUpdate();
+
+      session.createNativeQuery("select u from User u where u.personalInfo.firstname = 'Ivan'", User.class);
 
 
       session.getTransaction().commit();
@@ -57,26 +69,26 @@ class MainTest {
 
       session.save(google);
 
-      var programmer = Programmer.builder()
-              .username("ivan@gmail.com")
-              .language(Language.JAVA)
-              .company(google)
-              .build();
+//      var programmer = Programmer.builder()
+//              .username("ivan@gmail.com")
+//              .language(Language.JAVA)
+//              .company(google)
+//              .build();
+//
+//      session.save(programmer);
+//
+//      var manager = Manager.builder()
+//              .username("sveta@gmail.com")
+//              .projectName("loan")
+//              .company(google)
+//              .build();
 
-      session.save(programmer);
-
-      var manager = Manager.builder()
-              .username("sveta@gmail.com")
-              .projectName("loan")
-              .company(google)
-              .build();
-
-      session.save(manager);
+//      session.save(manager);
       session.flush();
 
       session.clear();
 
-      var programmer1 = session.get(Programmer.class, 1L);
+//      var programmer1 = session.get(Programmer.class, 1L);
       var user = session.get(User.class, 1L);
 
 

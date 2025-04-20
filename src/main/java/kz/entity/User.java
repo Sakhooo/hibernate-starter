@@ -1,56 +1,72 @@
 package kz.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import kz.converter.BirthdayConverter;
 import lombok.*;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import static kz.util.StringUtils.SPACE;
+
+@NamedQuery(name = "findUserByName", query = "select u from User u " +
+        "left join u.company c " +
+        "where u.personalInfo.firstname = :firstname and c.name = :companyName " +
+        "order by u.personalInfo.lastname desc")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "username")
+@ToString(exclude = {"company", "profile", "userChats", "payments"})
+@Builder
 @Entity
-@ToString(exclude = {"company", "profile", "userChats"})
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "users", schema = "public")
-@DiscriminatorColumn(name = "type")
-public abstract class User implements BaseEntity<Long>{
+@TypeDef(name = "dmdev", typeClass = JsonBinaryType.class)
+public class User implements Comparable<User>, BaseEntity<Long> {
 
   @Id
-  @GeneratedValue(generator = "user_gen", strategy = GenerationType.IDENTITY)
-//  @SequenceGenerator(name = "user_gen", sequenceName = "users_id_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-//  @EmbeddedId
   @AttributeOverride(name = "birthDate", column = @Column(name = "birth_date"))
   private PersonalInfo personalInfo;
 
   @Column(unique = true)
   private String username;
 
-
-  @Type(type = "com.vladmihalcea.hibernate.type.json.JsonBinaryType")
+  @Type(type = "dmdev")
   private String info;
 
+  @Enumerated(EnumType.STRING)
+  private Role role;
 
-  @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
-  @JoinColumn(name = "company_id")
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "company_id") // company_id
   private Company company;
 
-  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+  @OneToOne(
+          mappedBy = "user",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY
+  )
   private Profile profile;
 
+  @Builder.Default
   @OneToMany(mappedBy = "user")
   private List<UserChat> userChats = new ArrayList<>();
 
+  @Builder.Default
+  @OneToMany(mappedBy = "receiver")
+  private List<Payment> payments = new ArrayList<>();
 
+  @Override
+  public int compareTo(User o) {
+    return username.compareTo(o.username);
+  }
 
-
-
-
+  public String fullName() {
+    return getPersonalInfo().getFirstname() + SPACE + getPersonalInfo().getLastname();
+  }
 }

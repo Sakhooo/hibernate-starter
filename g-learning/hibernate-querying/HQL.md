@@ -29,3 +29,8 @@ where u.personalInfo.firstname = :firstname
 2) u.personalInfo.firstname — путь к полю внутри Embeddable-объекта.
 3) join u.company c — связывает сущность User с Company.
 4) .setParameter(...) — подставляет значения в запрос по имени параметра.
+
+
+
+
+

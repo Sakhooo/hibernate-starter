@@ -18,8 +18,9 @@
     <mapping class="kz.entity.Profile"/>
     <mapping class="kz.entity.Chat"/>
     <mapping class="kz.entity.UserChat"/>
-    <mapping class="kz.entity.Programmer"/>
-    <mapping class="kz.entity.Manager"/>
+    <mapping class="kz.entity.Payment"/>
+<!--    <mapping class="kz.entity.Programmer"/>-->
+<!--    <mapping class="kz.entity.Manager"/>-->
 
   </session-factory>
 </hibernate-configuration>
