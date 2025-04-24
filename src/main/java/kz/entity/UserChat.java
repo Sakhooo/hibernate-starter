@@ -8,7 +8,7 @@ import java.time.Instant;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "createdAt")
+@EqualsAndHashCode(of = "createdAt", callSuper = false)
 @Builder
 @Entity
 @Table(name = "users_chat")

@@ -2,7 +2,6 @@ package kz.example;
 
 import kz.entity.*;
 import kz.example.util.HibernateTestUtil;
-import kz.util.HibernateUtil;
 import lombok.Cleanup;
 import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
@@ -101,7 +100,7 @@ class MainTest {
 
   @Test
   void localeInfo() {
-    try(var sessionFactory = HibernateUtil.buildSessionFactory();
+    try(var sessionFactory = HibernateTestUtil.buildSessionFactory();
         var session = sessionFactory.openSession()) {
       session.beginTransaction();
 
@@ -119,7 +118,7 @@ class MainTest {
 
   @Test
   void checkManyToMany() {
-    try(var sessionFactory = HibernateUtil.buildSessionFactory();
+    try(var sessionFactory = HibernateTestUtil.buildSessionFactory();
         var session = sessionFactory.openSession()) {
       session.beginTransaction();
 
@@ -154,7 +153,7 @@ class MainTest {
   @Test
   void checkOneToOne() {
 
-    try(var sessionFactory = HibernateUtil.buildSessionFactory();
+    try(var sessionFactory = HibernateTestUtil.buildSessionFactory();
         var session = sessionFactory.openSession()) {
       session.beginTransaction();
 
@@ -186,7 +185,7 @@ class MainTest {
 
   @Test
   void oneToMany() {
-    @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
+    @Cleanup var sessionFactory = HibernateTestUtil.buildSessionFactory();
     @Cleanup var session = sessionFactory.openSession();
 
     Company company = session.get(Company.class, 1);
@@ -221,7 +220,7 @@ class MainTest {
   @Test
   void addUserToNewCompany() {
 
-    @Cleanup var sessionFactory = HibernateUtil.buildSessionFactory();
+    @Cleanup var sessionFactory = HibernateTestUtil.buildSessionFactory();
     @Cleanup var session = sessionFactory.openSession();
 
     session.beginTransaction();
