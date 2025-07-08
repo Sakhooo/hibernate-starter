@@ -1,8 +1,10 @@
 package kz.example.dao;
 
 
+import com.querydsl.core.Tuple;
 import kz.dao.UserDao;
 import kz.dto.CompanyDto;
+import kz.dto.PaymentFilter;
 import kz.entity.Payment;
 import kz.entity.User;
 import kz.example.util.HibernateTestUtil;
@@ -15,7 +17,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import javax.persistence.Tuple;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -113,7 +114,11 @@ class UserDaoTest {
     @Cleanup Session session = sessionFactory.openSession();
     session.beginTransaction();
 
-    Double averagePaymentAmount = userDao.findAveragePaymentAmountByFirstAndLastNames(session, "Bill", "Gates");
+    PaymentFilter filter = PaymentFilter.builder()
+            .firstName("Bill")
+            .lastName("Gates")
+            .build();
+    Double averagePaymentAmount = userDao.findAveragePaymentAmountByFirstAndLastNames(session, filter);
     assertThat(averagePaymentAmount).isEqualTo(300.0);
 
     session.getTransaction().commit();
@@ -124,13 +129,13 @@ class UserDaoTest {
     @Cleanup Session session = sessionFactory.openSession();
     session.beginTransaction();
 
-    List<CompanyDto> results = userDao.findCompanyNamesWithAvgUserPaymentsOrderedByCompanyName(session);
+    List<Tuple> results = userDao.findCompanyNamesWithAvgUserPaymentsOrderedByCompanyName(session);
     assertThat(results).hasSize(3);
 
-    List<String> orgNames = results.stream().map(CompanyDto::getName).collect(toList());
+    List<String> orgNames = results.stream().map(it -> it.get(0, String.class)).collect(toList());
     assertThat(orgNames).contains("Apple", "Google", "Microsoft");
 
-    List<Double> orgAvgPayments = results.stream().map(CompanyDto::getAmount).collect(toList());
+    List<Double> orgAvgPayments = results.stream().map(it -> it.get(1, Double.class)).collect(toList());
     assertThat(orgAvgPayments).contains(410.0, 400.0, 300.0);
 
     session.getTransaction().commit();
